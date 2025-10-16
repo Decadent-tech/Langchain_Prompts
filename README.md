@@ -25,7 +25,7 @@ Configuration	.env + dotenv
 
 ##  Setup Instructions
 # Clone Repository
-git clone 
+git clone https://github.com/Decadent-tech/Langchain_Prompts
 cd LANGCHAIN_PROMPTS
 
 # Create .env File
@@ -60,7 +60,6 @@ Response is displayed in Streamlit UI
 ## (Optional) Screenshot
 ![alt text](image.png)
 
-Add UI screenshot here
 
 ## Contributions
 
