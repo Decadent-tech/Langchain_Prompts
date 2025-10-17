@@ -1,24 +1,28 @@
-from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
-from typing import TypedDict, Annotated, Optional, Literal
-from pydantic import BaseModel, Field
+from typing import Optional, Literal, TypedDict, Annotated
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 
 load_dotenv()
 
-model = ChatOpenAI()
+llm = HuggingFaceEndpoint(
+    repo_id="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    task="text-generation"
+)
 
-# schema
-class Review(BaseModel):
+model = ChatHuggingFace(llm=llm)
 
-    key_themes: list[str] = Field(description="Write down all the key themes discussed in the review in a list")
-    summary: str = Field(description="A brief summary of the review")
-    sentiment: Literal["pos", "neg"] = Field(description="Return sentiment of the review either negative, positive or neutral")
-    pros: Optional[list[str]] = Field(default=None, description="Write down all the pros inside a list")
-    cons: Optional[list[str]] = Field(default=None, description="Write down all the cons inside a list")
-    name: Optional[str] = Field(default=None, description="Write the name of the reviewer")
+# schema (use TypedDict + Annotated so function calling with non-Pydantic schema works)
+class Review(TypedDict):
+
+    key_themes: Annotated[list[str], "Write down all the key themes discussed in the review in a list"]
+    summary: Annotated[str, "A brief summary of the review"]
+    sentiment: Annotated[Literal["pos", "neg"], "Return sentiment of the review either negative, positive or neutral"]
+    pros: Annotated[Optional[list[str]], "Write down all the pros inside a list"]
+    cons: Annotated[Optional[list[str]], "Write down all the cons inside a list"]
+    name: Annotated[Optional[str], "Write the name of the reviewer"]
     
 
-structured_model = model.with_structured_output(Review)
+structured_model = model.with_structured_output(Review, method="function_calling")
 
 result = structured_model.invoke("""I recently upgraded to the Samsung Galaxy S24 Ultra, and I must say, it’s an absolute powerhouse! The Snapdragon 8 Gen 3 processor makes everything lightning fast—whether I’m gaming, multitasking, or editing photos. The 5000mAh battery easily lasts a full day even with heavy use, and the 45W fast charging is a lifesaver.
 
@@ -32,10 +36,7 @@ Stunning 200MP camera with incredible zoom capabilities
 Long battery life with fast charging
 S-Pen support is unique and useful
                                  
-Review by Me Yours Truely
+Review by Meeee
 """)
 
 print(result)
-res_dict = dict(result)
-# name , summary, sentiment
-print(res_dict['name'], res_dict['summary'], res_dict['sentiment'])

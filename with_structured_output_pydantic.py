@@ -32,10 +32,7 @@ Stunning 200MP camera with incredible zoom capabilities
 Long battery life with fast charging
 S-Pen support is unique and useful
                                  
-Review by Me Yours Truely
+Review by Nitish Singh
 """)
 
 print(result)
-res_dict = dict(result)
-# name , summary, sentiment
-print(res_dict['name'], res_dict['summary'], res_dict['sentiment'])
